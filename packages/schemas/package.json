@@ -9,7 +9,7 @@
         "calls this a 'just-in-time package': nothing builds, the consumer",
         "transpiles. It works because every consumer here is an application we",
         "run ourselves. A package published to npm must ship compiled JS +",
-        ".d.ts instead -- see the README section on publishing."
+        ".d.ts instead, built with tsup or tsdown."
     ],
     "exports": {
         ".": "./src/index.ts"

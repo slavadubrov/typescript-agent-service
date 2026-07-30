@@ -4,7 +4,7 @@ A working agent service in a pnpm monorepo, written to be read by a Python ML
 engineer who has never shipped TypeScript.
 
 It is the companion repository for
-[TypeScript for Python ML Engineers](https://slavadubrov.github.io/blog/2026/08/03/typescript-for-python-ml-engineers/).
+[TypeScript for Python ML Engineers](https://slavadubrov.github.io/blog/2026/07/30/typescript-for-python-ml-engineers/).
 
 Every file carries comments explaining **why** it looks the way it does, and
 what the Python equivalent would be. The comments are the point. Read the
