@@ -1,0 +1,37 @@
+{
+    "name": "typescript-agent-service",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "description": "A guided pnpm monorepo that teaches modern TypeScript/Node to Python ML engineers by building a streaming agent service.",
+    "packageManager": "pnpm@11.15.1",
+    "engines": {
+        "node": ">=24"
+    },
+    "scripts": {
+        "check": "pnpm run typecheck && pnpm run lint && pnpm run test",
+        "typecheck": "tsc --noEmit -p tsconfig.json",
+        "lint": "biome check .",
+        "format": "biome check --write .",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "dev:api": "tsx watch apps/api/src/index.ts",
+        "dev:worker": "tsx watch apps/worker/src/index.ts",
+        "start:api": "node apps/api/src/index.ts",
+        "start:worker": "node apps/worker/src/index.ts",
+        "mcp": "tsx apps/mcp/src/index.ts",
+        "db:up": "docker compose up -d --wait",
+        "db:down": "docker compose down -v",
+        "db:push": "drizzle-kit push",
+        "demo": "tsx scripts/demo.ts"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "2.5.6",
+        "@types/node": "26.1.2",
+        "@types/pg": "8.20.0",
+        "drizzle-kit": "0.31.10",
+        "tsx": "4.23.1",
+        "typescript": "7.0.2",
+        "vitest": "4.1.10"
+    }
+}

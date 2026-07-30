@@ -1,0 +1,29 @@
+# Local Postgres only.
+#
+# There is no Redis service here on purpose. The worker's queue is a Postgres
+# table claimed with FOR UPDATE SKIP LOCKED, so Redis would be an idle
+# container. Add it (and BullMQ) when you need delayed jobs, repeatable
+# schedules, priorities, or rate limits -- the same threshold at which you
+# would move from a database table to Celery in Python.
+
+services:
+    postgres:
+        image: postgres:17-alpine
+        environment:
+            POSTGRES_USER: agent
+            POSTGRES_PASSWORD: agent
+            POSTGRES_DB: agent
+        ports:
+            - "5432:5432"
+        healthcheck:
+            # Compose will not report the service healthy until this passes.
+            # Without it, `pnpm db:push` races the database's own startup.
+            test: ["CMD-SHELL", "pg_isready -U agent -d agent"]
+            interval: 2s
+            timeout: 3s
+            retries: 15
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+
+volumes:
+    pgdata:

@@ -1,0 +1,8 @@
+{
+    // Root config used by `pnpm typecheck` and by your editor. It type-checks
+    // every package in one pass, which is what you want in a repo this size.
+    // Larger monorepos split this into project references so `tsc --build`
+    // can cache per package.
+    "extends": "./tsconfig.base.json",
+    "include": ["apps/*/src", "packages/*/src", "scripts", "vitest.config.ts", "drizzle.config.ts"]
+}

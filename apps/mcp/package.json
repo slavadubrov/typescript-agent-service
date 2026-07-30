@@ -1,0 +1,12 @@
+{
+    "name": "@agent/mcp",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "dependencies": {
+        "@agent/core": "workspace:*",
+        "@agent/schemas": "workspace:*",
+        "@modelcontextprotocol/sdk": "1.30.0",
+        "zod": "4.4.3"
+    }
+}

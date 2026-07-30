@@ -1,0 +1,23 @@
+# The pnpm equivalent of a uv workspace: every directory matched here becomes a
+# package that the others can depend on by name (e.g. "@agent/schemas").
+#
+# Python analogue:
+#   [tool.uv.workspace]
+#   members = ["apps/*", "packages/*"]
+packages:
+    - "apps/*"
+    - "packages/*"
+
+# pnpm will not run a dependency's install scripts unless you name it here.
+# That is why a fresh `pnpm install` prints "Ignored build scripts" and stops.
+# It is a supply-chain control: a postinstall script is arbitrary code running
+# with your credentials in scope. Only allow what you looked at.
+allowBuilds:
+    esbuild: true
+    protobufjs: true
+
+# pnpm 11 refuses packages published within the last few days by default, on
+# the theory that a compromised release is usually caught within that window.
+# Anything you deliberately want sooner has to be named here.
+minimumReleaseAgeExclude:
+    - openai@7.2.0

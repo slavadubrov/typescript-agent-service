@@ -1,0 +1,20 @@
+{
+    "name": "@agent/schemas",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "//": [
+        "An internal workspace package. The 'exports' map points straight at",
+        "TypeScript source instead of a compiled dist/ directory. Turborepo",
+        "calls this a 'just-in-time package': nothing builds, the consumer",
+        "transpiles. It works because every consumer here is an application we",
+        "run ourselves. A package published to npm must ship compiled JS +",
+        ".d.ts instead -- see the README section on publishing."
+    ],
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "dependencies": {
+        "zod": "4.4.3"
+    }
+}

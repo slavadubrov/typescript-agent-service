@@ -1,0 +1,19 @@
+{
+    "name": "@agent/core",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "dependencies": {
+        "@agent/observability": "workspace:*",
+        "@agent/schemas": "workspace:*",
+        "@ai-sdk/openai-compatible": "3.0.17",
+        "ai": "7.0.42",
+        "drizzle-orm": "0.45.2",
+        "openai": "7.2.0",
+        "pg": "8.22.0",
+        "zod": "4.4.3"
+    }
+}

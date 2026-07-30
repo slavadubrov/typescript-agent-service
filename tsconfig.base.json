@@ -1,0 +1,69 @@
+{
+    // Shared compiler settings. Every package extends this file, the same way
+    // every Python package in a monorepo shares one [tool.mypy] section.
+    //
+    // Nothing here emits JavaScript. We type-check with `tsc --noEmit` and run
+    // the TypeScript directly (Node strips the types). Compiling to dist/ is a
+    // step this repo does not need.
+    "compilerOptions": {
+        // Node 24/26 support everything in ES2023 natively. Do not down-level.
+        "target": "ES2023",
+        "lib": ["ES2023"],
+
+        // "nodenext" makes TypeScript resolve imports exactly the way Node
+        // does at runtime: package.json "exports" maps are honoured, and
+        // relative imports need a file extension. That last rule surprises
+        // everyone coming from Python's extensionless `from .env import x`.
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+
+        // Write `./tools.ts`, not `./tools.js`.
+        //
+        // Historically TypeScript made you name the *output* file, so source
+        // was full of `.js` extensions pointing at files that did not exist.
+        // That still works, but only if a bundler or tsx rewrites the
+        // specifier. Node's own type-stripper does not: `node index.ts` with
+        // a `./tools.js` import fails with ERR_MODULE_NOT_FOUND.
+        //
+        // Naming the real file makes `node src/index.ts` work with no loader
+        // at all. TypeScript only permits it when nothing is emitted, which is
+        // exactly this repo's setup.
+        "allowImportingTsExtensions": true,
+        "noEmit": true,
+
+        // The single most valuable flag in the file. `strict` turns on
+        // null-checking, implicit-any errors, and strict function types.
+        // Treat it as non-negotiable, like `mypy --strict` on a new codebase.
+        "strict": true,
+
+        // `xs[0]` is typed `T | undefined` instead of `T`. TypeScript does not
+        // enable this under `strict` for backwards-compatibility reasons, but
+        // it catches a genuine class of bug and you want it from day one.
+        "noUncheckedIndexedAccess": true,
+
+        // Errors on unused locals and parameters, the way Ruff's F841 does.
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+
+        // Every `case` must break or return.
+        "noFallthroughCasesInSwitch": true,
+
+        // Forbids syntax that cannot be erased by a plain type-stripper
+        // (`enum`, parameter properties, namespaces). Required if you want
+        // `node file.ts` to work without a build step.
+        "erasableSyntaxOnly": true,
+
+        // Import statements that only carry types must say `import type`.
+        // Without this, a type-only import can survive into the emitted
+        // JavaScript and drag a whole module into the runtime graph.
+        "verbatimModuleSyntax": true,
+        "isolatedModules": true,
+
+        // Skip type-checking of .d.ts files in node_modules. Turning this off
+        // costs minutes of CI time to find bugs in other people's types.
+        "skipLibCheck": true,
+
+        "resolveJsonModule": true,
+        "types": ["node"]
+    }
+}

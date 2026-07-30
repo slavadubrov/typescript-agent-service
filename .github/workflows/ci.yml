@@ -1,0 +1,68 @@
+# CI: type-check, lint, test, and build the image.
+#
+# The Python equivalent would run mypy, ruff, and pytest. The one structural
+# difference is that `tsc --noEmit` is a separate job from the tests, because
+# TypeScript's types are erased at runtime and the test run proves nothing
+# about them.
+
+name: ci
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+
+jobs:
+    check:
+        runs-on: ubuntu-latest
+
+        services:
+            # The integration tests in db/storage.test.ts skip themselves when
+            # DATABASE_URL is unset. Providing it here is what turns them on.
+            postgres:
+                image: postgres:17-alpine
+                env:
+                    POSTGRES_USER: agent
+                    POSTGRES_PASSWORD: agent
+                    POSTGRES_DB: agent
+                ports: ["5432:5432"]
+                options: >-
+                    --health-cmd "pg_isready -U agent -d agent"
+                    --health-interval 2s
+                    --health-timeout 3s
+                    --health-retries 15
+
+        env:
+            DATABASE_URL: postgres://agent:agent@localhost:5432/agent
+
+        steps:
+            - uses: actions/checkout@v6
+
+            # Corepack reads `packageManager` from package.json and installs
+            # that exact pnpm version. It is the closest thing Node has to
+            # pinning your build tool in the manifest.
+            - run: corepack enable
+
+            - uses: actions/setup-node@v6
+              with:
+                  node-version-file: .nvmrc
+                  # Caches the pnpm store, not node_modules. The store is
+                  # content-addressed and shared across branches; node_modules
+                  # is a per-checkout symlink farm and caching it is a trap.
+                  cache: pnpm
+
+            # `--frozen-lockfile` fails if the lockfile does not match
+            # package.json, instead of silently resolving something new. This
+            # is `npm ci`, and `uv sync --frozen` in the Python world.
+            - run: pnpm install --frozen-lockfile
+
+            - run: pnpm typecheck
+            - run: pnpm lint
+            - run: pnpm db:push
+            - run: pnpm test
+
+    docker:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v6
+            - run: docker build -t agent-api .
