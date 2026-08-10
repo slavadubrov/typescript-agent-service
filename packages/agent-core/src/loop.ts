@@ -93,6 +93,7 @@ export async function* runAgent(options: RunAgentOptions): AsyncGenerator<AgentE
             model,
             messages,
             tools: openAITools,
+            reasoning_effort: "none",
             stream: true,
         });
 

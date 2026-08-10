@@ -60,7 +60,12 @@ export function defineTool<TInput>(tool: AgentTool<TInput>): RuntimeTool {
         // `io: "input"` matters when a schema has defaults or transforms: the
         // input shape and the parsed output shape differ, and the model needs
         // the input one.
-        parameters: z.toJSONSchema(tool.schema, { io: "input" }) as Record<string, unknown>,
+        // OpenAI strict tools require a closed object schema. Zod deliberately
+        // omits this for input schemas because plain z.object() strips extras.
+        parameters: {
+            ...z.toJSONSchema(tool.schema, { io: "input" }),
+            additionalProperties: false,
+        } as Record<string, unknown>,
         parse(raw) {
             const result = tool.schema.safeParse(raw);
             return result.success

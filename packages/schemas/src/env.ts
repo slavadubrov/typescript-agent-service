@@ -33,7 +33,7 @@ const EnvSchema = z.object({
     // less informative. There is a test for exactly this in env.test.ts.
     OPENAI_BASE_URL: z.url({ protocol: /^https?$/ }).default("https://api.openai.com/v1"),
     OPENAI_API_KEY: z.string().min(1).default("not-set"),
-    AGENT_MODEL: z.string().min(1).default("gpt-4.1-mini"),
+    AGENT_MODEL: z.string().min(1).default("gpt-5.6-luna"),
 
     // Optional: when unset the API and worker run without a database and the
     // storage layer becomes a no-op. Keeps `pnpm demo` runnable on a laptop

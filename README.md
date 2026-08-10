@@ -71,6 +71,11 @@ pnpm dev:api                  # http://localhost:8080
 pnpm dev:worker               # in a second terminal
 ```
 
+`pnpm` selects and runs these package scripts; Node is the runtime inside them.
+The API and worker scripts load `.env` before the application starts.
+After changing `.env`, stop each running process with `Ctrl-C` and rerun its
+`pnpm dev:*` command.
+
 Stream an agent run:
 
 ```bash

@@ -358,9 +358,13 @@ describe("runAgent", () => {
 
 describe("toolsToOpenAI", () => {
     it("emits JSON Schema the provider will accept", () => {
-        const [first] = toolsToOpenAI(TOOLS);
+        const declarations = toolsToOpenAI(TOOLS);
+        const [first] = declarations;
         expect(first?.function.name).toBe("lookup_model");
         expect(first?.function.strict).toBe(true);
+        for (const declaration of declarations) {
+            expect(declaration.function.parameters).toMatchObject({ additionalProperties: false });
+        }
         // `.describe()` text has to reach the model, or the schema is a
         // validator the model never sees the intent of.
         expect(JSON.stringify(first?.function.parameters)).toMatch(/Model identifier/);
