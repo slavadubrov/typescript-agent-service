@@ -191,7 +191,7 @@ describe("POST /v1/chat", () => {
         expect(res.status).toBe(200);
         const frames = parseSSE(await res.text());
         expect(frames.at(-1)?.event).toBe("error");
-        expect(frames.at(-1)?.data).toMatchObject({ message: "upstream 429" });
+        expect(frames.at(-1)?.data).toMatchObject({ message: "Agent run failed" });
     });
 });
 

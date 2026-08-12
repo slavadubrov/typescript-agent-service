@@ -75,11 +75,10 @@ export function createApp(deps: AppDeps) {
                 // The connection is already open with a 200 status, so there
                 // is no status code left to change. The only honest way to
                 // report a mid-stream failure is an error frame.
-                const message = error instanceof Error ? error.message : String(error);
                 log.error({ err: error }, "agent run failed");
                 await stream.writeSSE({
                     event: "error",
-                    data: JSON.stringify({ type: "error", message }),
+                    data: JSON.stringify({ type: "error", message: "Agent run failed" }),
                 });
                 return;
             }

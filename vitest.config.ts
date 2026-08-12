@@ -3,7 +3,7 @@
  * `assert`, `vi.fn()` to `unittest.mock.Mock`, and `test.each` to
  * `@pytest.mark.parametrize`.
  *
- * The reason to prefer it over Jest in 2026 is boring: it runs TypeScript and
+ * The reason to prefer it over Jest in 2026: it runs TypeScript and
  * ES modules natively, with no transform configuration to maintain.
  */
 
