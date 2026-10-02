@@ -2,9 +2,8 @@
  * The wire contract between the agent loop and everything that watches it.
  *
  * The loop is an async generator that yields these events. The HTTP layer
- * turns them into Server-Sent Events, the tests assert on them as plain
- * objects, and the worker writes them to Postgres. One vocabulary, three
- * consumers, no translation layer in between.
+ * turns them into Server-Sent Events, and the tests assert on them as plain
+ * objects. One vocabulary, no translation layer in between.
  */
 
 import { z } from "zod";

@@ -4,7 +4,7 @@ A working agent service in a pnpm monorepo, written to be read by a Python ML
 engineer who has never shipped TypeScript.
 
 It is the companion repository for
-[TypeScript for Python ML Engineers](https://slavadubrov.github.io/blog/2026/07/30/typescript-for-python-ml-engineers/).
+[TypeScript for Python ML Engineers](https://slavadubrov.github.io/blog/2026/08/15/typescript-for-python-ml-engineers/).
 
 Every file carries comments explaining **why** it looks the way it does, and
 what the Python equivalent would be. The comments are the point. Read the
@@ -126,16 +126,18 @@ printf '%s\n' \
 
 **`/chat/completions`, not the Responses API.** Every OpenAI-compatible server
 implements chat completions: vLLM, SGLang, Ollama, Together. Switching this
-service to a model you host yourself is one environment variable. The Responses
-API is a better API that only OpenAI speaks.
+service to a model you host yourself is one environment variable. Responses API
+support on these servers varies by release; check each server's
+compatibility page.
 
 **The agent loop is written twice.** `loop.ts` is hand-rolled; `loop-ai-sdk.ts`
 uses the Vercel AI SDK. They emit the same event stream, so you can read the
 diff and decide for yourself what the framework is worth.
 
 **Postgres is the queue.** No Redis, no BullMQ. `SELECT ... FOR UPDATE SKIP
-LOCKED` is a correct queue in one table, and it is transactional with your
-other writes. Add BullMQ when you need delayed jobs, repeatable schedules,
+LOCKED` gives an at-least-once queue in one table, and it is transactional
+with your other writes. A job running longer than the five-minute stale-lock
+threshold can be claimed twice, so make jobs idempotent. Add BullMQ when you need delayed jobs, repeatable schedules,
 priorities, or rate limits — the same threshold at which you would move from a
 database table to Celery.
 
@@ -151,7 +153,7 @@ Node 26.4.0 (engines allow >= 24), pnpm 11.15.1, TypeScript 7.0.2, Zod 4.4.3,
 Hono 4.12.32, `ai` 7.0.42, `openai` 7.2.0, Drizzle ORM 0.45.2, Vitest 4.1.10,
 Biome 2.5.6, `@modelcontextprotocol/sdk` 1.30.0, Postgres 17.
 
-40 tests pass, including 4 integration tests against a real Postgres. The
+42 tests pass, including 4 integration tests against a real Postgres. The
 runtime image is ~480 MB on `node:24-slim`; most of that is the OpenTelemetry
 dependency tree.
 
