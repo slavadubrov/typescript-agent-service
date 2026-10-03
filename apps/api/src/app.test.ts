@@ -168,6 +168,31 @@ describe("POST /v1/chat", () => {
         );
     });
 
+    it.each([
+        ["stop", "succeeded"],
+        ["max_steps", "truncated"],
+    ] as const)("stores a run that stopped with %s as %s", async (stopReason, status) => {
+        const createRun = vi.fn(async () => undefined);
+        const app = createApp({
+            env,
+            logger: silentLogger,
+            storage: fakeStorage({ createRun }),
+            runAgent: scriptedAgent([
+                { type: "text", delta: "partial" },
+                { type: "done", stopReason, steps: 6, text: "partial" },
+            ]),
+        });
+
+        const res = await app.request("/v1/chat", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ message: "hi" }),
+        });
+        await res.text();
+
+        expect(createRun).toHaveBeenCalledWith(expect.objectContaining({ status }));
+    });
+
     it("reports a mid-stream failure as an error frame, not a 500", async () => {
         // The response status was committed the moment the first byte went
         // out. This is the failure mode that surprises people migrating from

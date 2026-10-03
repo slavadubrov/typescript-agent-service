@@ -25,7 +25,7 @@ export const runs = pgTable(
         // the SQL. The database still stores text; the compiler now rejects
         // `status: "pending "` with a trailing space.
         status: text("status")
-            .$type<"queued" | "running" | "succeeded" | "failed">()
+            .$type<"queued" | "running" | "succeeded" | "truncated" | "failed">()
             .notNull()
             .default("queued"),
 

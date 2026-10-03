@@ -55,6 +55,7 @@ export function createApp(deps: AppDeps) {
 
         return streamSSE(c, async (stream) => {
             let text = "";
+            let done: Extract<AgentEvent, { type: "done" }> | undefined;
             try {
                 await withSpan("agent.run", { "agent.max_steps": body.maxSteps }, async () => {
                     for await (const event of deps.runAgent({
@@ -62,6 +63,7 @@ export function createApp(deps: AppDeps) {
                         maxSteps: body.maxSteps,
                     })) {
                         if (event.type === "text") text += event.delta;
+                        if (event.type === "done") done = event;
 
                         // One SSE frame per agent event. The client switches on
                         // `event:` and never has to parse a bespoke protocol.
@@ -85,9 +87,11 @@ export function createApp(deps: AppDeps) {
 
             // Persist after the stream, not during: writing a row per token
             // would make Postgres the bottleneck in a token-latency budget.
+            // A loop that hits `maxSteps` completes normally, so check the
+            // final `done` event: that run's text may be partial.
             await deps.storage.createRun({
                 kind: "chat",
-                status: "succeeded",
+                status: done?.stopReason === "max_steps" ? "truncated" : "succeeded",
                 input: { message: body.message },
                 output: { text },
             });
